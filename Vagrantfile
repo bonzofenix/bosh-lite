@@ -15,12 +15,18 @@ Vagrant.configure('2') do |config|
     end
   end
 
-  config.vm.provider :aws do |v, override|
-    override.vm.box_version = '2811'
-    # To turn off public IP echoing, uncomment this line:
-    # override.vm.provision :shell, id: "public_ip", run: "always", inline: "/bin/true"
+  ENV['NUMBER_OF_BOSHES'] ||= '1'
+  ENV['NUMBER_OF_BOSHES'].strip.to_i.times do |i|
+    ENV['BOSH_LITE_NAME'] = vm_name = "bosh-lite-#{i}"
+    config.vm.define vm_name do |workstation|
+      config.vm.provider :aws do |v, override|
+        override.vm.box_version = '2811'
+        # To turn off public IP echoing, uncomment this line:
+        # override.vm.provision :shell, id: "public_ip", run: "always", inline: "/bin/true"
 
-    # To turn off CF port forwarding, uncomment this line:
-    # override.vm.provision :shell, id: "port_forwarding", run: "always", inline: "/bin/true"
+        # To turn off CF port forwarding, uncomment this line:
+        # override.vm.provision :shell, id: "port_forwarding", run: "always", inline: "/bin/true"
+      end
+    end
   end
 end
